@@ -1,0 +1,23 @@
+2023-10-05 00:50:26 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Error de Sintaxis en sentencia SQL "[*]database.url= jdbc:h2:C:/Users/daniel/Desktop/EServidor/FunkoAsync/funkos.db\000d\000a"; se esperaba "DELETE, DROP, DECLARE, DEALLOCATE"
+Syntax error in SQL statement "[*]database.url= jdbc:h2:C:/Users/daniel/Desktop/EServidor/FunkoAsync/funkos.db\000d\000a"; expected "DELETE, DROP, DECLARE, DEALLOCATE"; SQL statement:
+database.url= jdbc:h2:C:/Users/daniel/Desktop/EServidor/FunkoAsync/funkos.db
+ [42001-210]
+2023-10-05 01:09:12 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "FUNKOS" not found (this database is empty); SQL statement:
+SELECT * FROM funkos [42104-210]
+2023-10-05 01:09:47 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "FUNKOS" not found (this database is empty); SQL statement:
+SELECT * FROM funkos [42104-210]
+2023-10-05 01:10:19 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "FUNKOS" not found (this database is empty); SQL statement:
+SELECT * FROM funkos [42104-210]
+2023-10-05 01:10:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "FUNKOS" not found (this database is empty); SQL statement:
+SELECT * FROM funkos [42104-210]
+2023-10-05 01:13:04 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "FUNKOS" not found (this database is empty); SQL statement:
+SELECT * FROM FUNKOS [42104-210]
+2023-10-05 01:14:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "FUNKOS" not found (this database is empty); SQL statement:
+SELECT * FROM FUNKOS [42104-210]
