@@ -7,18 +7,18 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record Funko(Integer id, UUID COD, String nombre, Modelo modelo, double precio, LocalDate fecha, LocalDateTime created_at, LocalDateTime updated_at) {
+public record Funko(UUID COD, Long myId, String nombre, Modelo modelo, double precio, LocalDate fecha, LocalDateTime created_at, LocalDateTime updated_at) {
     @Override
     public String toString() {
         return "Funko{" +
-                "id=" + id +
-                ", COD=" + COD +
+                "COD=" + COD +
+                ", myId=" + myId +
                 ", nombre='" + nombre + '\'' +
                 ", modelo=" + modelo +
-                ", precio=" + MyLocale.toLocalMoney(precio) +
-                ", fecha=" + MyLocale.toLocalDate(fecha) +
-                ", created_at=" + MyLocale.toLocalDateTime(created_at) +
-                ", updated_at=" + MyLocale.toLocalDateTime(updated_at) +
+                ", precio=" + precio +
+                ", fecha=" + fecha +
+                ", created_at=" + created_at +
+                ", updated_at=" + updated_at +
                 '}';
     }
 }
