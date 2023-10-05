@@ -17,7 +17,7 @@ dependencies {
 
     implementation("ch.qos.logback:logback-classic:1.4.11")
     implementation("org.jetbrains:annotations:24.0.0")
-    implementation("com.h2database:h2:2.2.224")
+    implementation("com.h2database:h2:2.1.210")
     implementation("org.mybatis:mybatis:3.5.13")
 }
 
