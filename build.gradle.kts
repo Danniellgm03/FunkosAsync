@@ -19,6 +19,8 @@ dependencies {
     implementation("org.jetbrains:annotations:24.0.0")
     implementation("com.h2database:h2:2.1.210")
     implementation("org.mybatis:mybatis:3.5.13")
+    implementation("com.zaxxer:HikariCP:5.0.1")
+
 }
 
 tasks.test {
