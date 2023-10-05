@@ -1,5 +1,7 @@
 package org.funkoAsync.services.database;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.ibatis.jdbc.ScriptRunner;
 import org.funkoAsync.services.files.CsvManager;
 import org.slf4j.Logger;
@@ -19,46 +21,38 @@ public class DataBaseManager {
     private Boolean initTables;
 
     private PreparedStatement preparedStatement;
+
+    private HikariDataSource hikary;
     Logger logger =  LoggerFactory.getLogger(DataBaseManager.class);
 
-    private DataBaseManager(){
+    private  DataBaseManager(){
         initConfig();
+
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(url);
+        hikary = new HikariDataSource(config);
+        try {
+            conn = hikary.getConnection();
+
+           if(initTables){
+                String sqlFile = ClassLoader.getSystemResource("init.sql").getFile();
+                this.initData(sqlFile, conn);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public static DataBaseManager getInstance(){
+    public synchronized static DataBaseManager getInstance(){
         if(instance == null){
             instance = new DataBaseManager();
         }
         return instance;
     }
 
-    private ResultSet executeQuery(String query, Object... params) throws SQLException {
-        this.openConnection();
-        preparedStatement = conn.prepareStatement(query);
-        for(int i = 0; i < params.length; i++){
-            preparedStatement.setObject(i + 1, params[i]);
-        }
-        return preparedStatement.executeQuery();
-    }
-
-    public Optional<ResultSet> select(String query, Object... params) throws SQLException {
-        return Optional.of(executeQuery(query, params));
-    }
-
-    public int insert(String query, Object... params) throws SQLException {
-        this.openConnection();
-        preparedStatement = conn.prepareStatement(query);
-
-        for(int i = 0; i < params.length; i++){
-            preparedStatement.setObject(i + 1, params[i]);
-        }
-
-        return preparedStatement.executeUpdate();
-    }
 
 
-
-    private void initConfig() {
+    private synchronized void initConfig() {
 
         String propertiesFile = ClassLoader.getSystemResource("config.properties").getFile();
         Properties props = new Properties();
@@ -69,38 +63,33 @@ public class DataBaseManager {
             initTables = props.getProperty("database.initTables").equals("true");
             url = props.getProperty("database.url");
 
-            if(initTables){
-                String sqlFile = ClassLoader.getSystemResource("init.sql").getFile();
-                this.initData(sqlFile, true);
-            }
 
-        } catch (IOException | SQLException e) {
+
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
     }
 
-    public void openConnection() throws SQLException {
-        if(conn != null && !conn.isClosed()){
-            return;
-        }
-        logger.debug("Open connecion");
-        conn = DriverManager.getConnection(url);
-        System.out.println(conn);
+    public synchronized Connection getConnection() throws SQLException {
+        System.out.println(hikary);
+        return hikary.getConnection();
     }
 
-    private void initData(String sqlFile, boolean logWriter) throws SQLException, FileNotFoundException {
-        this.openConnection();
-
-        var sr = new ScriptRunner(conn);
-        var reader = new BufferedReader(new FileReader(sqlFile));
-        if(logWriter){
-            sr.setLogWriter(new PrintWriter(System.out));
-        }else{
-            sr.setLogWriter(null);
+    private synchronized void initData(String sqlFile, Connection conn)  {
+        try {
+            executeScript(conn, sqlFile, true);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
         }
-        sr.runScript(reader);
+    }
 
+    public synchronized void executeScript(Connection conn, String file, boolean logWriter) throws FileNotFoundException {
+        ScriptRunner sr = new ScriptRunner(conn);
+        logger.debug("Ejecutando script de SQL " + file);
+        Reader reader = new BufferedReader(new FileReader(file));
+        sr.setLogWriter(logWriter ? new PrintWriter(System.out) : null);
+        sr.runScript(reader);
     }
 
 }
