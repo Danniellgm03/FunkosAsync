@@ -9,5 +9,3 @@ CREATE TABLE IF NOT EXISTS funkos(
     created_at TIMESTAMP DEFAULT  CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMP DEFAULT  CURRENT_TIMESTAMP NOT NULL
 );
-
-INSERT INTO funkos (cod, myId, name, model, price, release_date) VALUES('999c6f58-79b9-434b-82ab-01a2d6e4434a', 2,  'Spiderman', 'MARVEL', 15.99, '2022-05-01');
