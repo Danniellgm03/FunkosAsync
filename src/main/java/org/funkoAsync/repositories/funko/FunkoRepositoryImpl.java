@@ -1,0 +1,241 @@
+package org.funkoAsync.repositories.funko;
+
+import org.funkoAsync.enums.Modelo;
+import org.funkoAsync.models.Funko;
+import org.funkoAsync.services.database.DataBaseManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+
+public class FunkoRepositoryImpl  implements FunkoRepository{
+
+
+    private static FunkoRepositoryImpl instance;
+    private final DataBaseManager db;
+
+    Logger logger = LoggerFactory.getLogger(FunkoRepositoryImpl.class);
+
+    private FunkoRepositoryImpl(DataBaseManager db){
+        this.db = db;
+    }
+
+    public static FunkoRepositoryImpl getInstance(DataBaseManager db){
+        if(instance == null){
+            instance = new FunkoRepositoryImpl(db);
+        }
+        return instance;
+    }
+
+    @Override
+    public CompletableFuture<Funko> save(Funko funko) throws SQLException, SQLException {
+        return CompletableFuture.supplyAsync(() -> {
+            String query = "INSERT INTO funkos (cod, myId, name, model, price, release_date) VALUES(?,?,?,?,?,?)";
+            try(
+                Connection conn = db.getConnection();
+                PreparedStatement prepare = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            ) {
+                logger.debug("Insertando el funko: " + funko);
+                prepare.setObject(1, funko.getCOD());
+                prepare.setObject(2, funko.getMyId());
+                prepare.setObject(3, funko.getNombre());
+                prepare.setObject(4, funko.getModelo().toString());
+                prepare.setObject(5, funko.getPrecio());
+                prepare.setObject(6, funko.getFecha());
+
+                int res = prepare.executeUpdate();
+                if(res > 0){
+                    ResultSet gKeys = prepare.getGeneratedKeys();
+                    while(gKeys.next()){
+                        funko.setId(gKeys.getInt("id"));
+                    }
+                }
+                if(res > 0){
+                   logger.debug("Funko insertado");
+                }
+            } catch (SQLException e) {
+                logger.debug("Error al insertar funko");
+            }
+            return funko;
+        });
+    }
+
+    @Override
+    public CompletableFuture<Funko> update(Funko funko) throws SQLException, SQLException {
+        return CompletableFuture.supplyAsync(() -> {
+            String query = "UPDATE funkos SET name = ?, model = ?, price = ?, release_date = ?, updated_at = ? WHERE id = ?";
+            try(
+                Connection conn = db.getConnection();
+                PreparedStatement prepare = conn.prepareStatement(query);
+            ){
+                logger.debug("Actualizando funko con id: " + funko.getId());
+                prepare.setObject(1, funko.getNombre());
+                prepare.setObject(2, funko.getModelo().toString());
+                prepare.setObject(3, funko.getPrecio());
+                prepare.setObject(4, funko.getFecha());
+                prepare.setObject(5, funko.getUpdated_at());
+                prepare.setObject(6, funko.getId());
+                int res = prepare.executeUpdate();
+                if(res > 0){
+                    logger.debug("Funko actualizado");
+                }else{
+                    logger.error("Error al actualizar funko");
+                }
+            } catch (SQLException e) {
+                logger.error("Error al actualizar funko: " + funko.getId());
+            }
+
+            return funko;
+        });
+    }
+
+    @Override
+    public CompletableFuture<Optional<Funko>> findById(Integer id) throws SQLException {
+        return CompletableFuture.supplyAsync(() -> {
+            Funko funko = null;
+            String query = "SELECT * FROM funkos WHERE id = ?";
+
+            try(
+                    Connection conn = db.getConnection();
+                    PreparedStatement prepare = conn.prepareStatement(query);
+            ){
+                logger.debug("Obteniendo todos los funkos");
+                prepare.setObject(1, id);
+                ResultSet res = prepare.executeQuery();
+                while(res.next()){
+                    funko = new Funko(
+                            res.getInt("id"),
+                            UUID.fromString(res.getString("cod")),
+                            res.getLong("myId"),
+                            res.getString("name"),
+                            Modelo.valueOf(res.getString("model")),
+                            res.getDouble("price"),
+                            LocalDate.parse(res.getString("release_date")),
+                            new Timestamp(res.getTimestamp("created_at").getTime()).toLocalDateTime(),
+                            new Timestamp(res.getTimestamp("updated_at").getTime()).toLocalDateTime()
+                    );
+
+                }
+            } catch (SQLException e) {
+                logger.error("Error al buscar todos los funkos");
+            }
+
+            return Optional.of(funko);
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<Funko>> findAll() throws SQLException {
+        return CompletableFuture.supplyAsync(() -> {
+            List<Funko> funkos = new ArrayList<>();
+            String query = "SELECT * FROM funkos";
+
+            try(
+                    Connection conn = db.getConnection();
+                    PreparedStatement prepare = conn.prepareStatement(query);
+            ){
+                logger.debug("Obteniendo todos los funkos");
+                ResultSet res = prepare.executeQuery();
+                while(res.next()){
+                    Funko funko = new Funko(
+                        res.getInt("id"),
+                        UUID.fromString(res.getString("cod")),
+                        res.getLong("myId"),
+                        res.getString("name"),
+                        Modelo.valueOf(res.getString("model")),
+                        res.getDouble("price"),
+                        LocalDate.parse(res.getString("release_date")),
+                        new Timestamp(res.getTimestamp("created_at").getTime()).toLocalDateTime(),
+                        new Timestamp(res.getTimestamp("updated_at").getTime()).toLocalDateTime()
+                    );
+
+                    funkos.add(funko);
+                }
+            } catch (SQLException e) {
+                logger.error("Error al buscar todos los funkos");
+            }
+
+            return funkos;
+        });
+    }
+
+    @Override
+    public CompletableFuture<Boolean> deleteById(Integer id) throws SQLException {
+        return CompletableFuture.supplyAsync(() -> {
+            String query = "DELETE FROM funkos WHERE id = ?";
+            boolean isDeleted = false;
+            try(
+                    Connection conn = db.getConnection();
+                    PreparedStatement prepare = conn.prepareStatement(query);
+            ){
+                logger.debug("Borrando funko con id: " + id);
+                prepare.setObject(1, id);
+                prepare.executeUpdate();
+            } catch (SQLException e) {
+                logger.error("Error al borrar el funko con id: " + id);
+            }
+            return isDeleted;
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteAll() throws SQLException {
+        return CompletableFuture.runAsync(() -> {
+           String query = "DELETE FROM funkos";
+
+           try(
+                Connection conn = db.getConnection();
+                PreparedStatement prepare = conn.prepareStatement(query);
+           ){
+               logger.debug("Borrando todos los funkos de base de datos");
+               prepare.executeUpdate();
+           } catch (SQLException e) {
+                logger.error("Error al borrar todos los funkos de la base de datos");
+           }
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<Funko>> findByNombre(String name) throws SQLException {
+        return CompletableFuture.supplyAsync(() -> {
+            List<Funko> funkos = new ArrayList<>();
+            String query = "SELECT * FROM funkos WHERE name LIKE ?";
+
+            try(
+                    Connection conn = db.getConnection();
+                    PreparedStatement prepare = conn.prepareStatement(query);
+            ){
+                logger.debug("Obteniendo los funkos con nombre: " + name);
+                prepare.setObject(1, name);
+                ResultSet res = prepare.executeQuery();
+
+                while(res.next()){
+                    Funko funko = new Funko(
+                        res.getInt("id"),
+                        UUID.fromString(res.getString("cod")),
+                        res.getLong("myId"),
+                        res.getString("name"),
+                        Modelo.valueOf(res.getString("model")),
+                        res.getDouble("price"),
+                        LocalDate.parse(res.getString("release_date")),
+                        new Timestamp(res.getTimestamp("created_at").getTime()).toLocalDateTime(),
+                        new Timestamp(res.getTimestamp("updated_at").getTime()).toLocalDateTime()
+                    );
+
+                    funkos.add(funko);
+                }
+
+            } catch (SQLException e) {
+                logger.error("Error al obtener los funkos con nombre: " + name);
+            }
+            return funkos;
+        });
+    }
+}
