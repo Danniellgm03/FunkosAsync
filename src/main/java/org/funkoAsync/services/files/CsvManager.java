@@ -35,6 +35,7 @@ public class CsvManager {
                     String[] lines_split = line.split(",");
 
                     Funko funko = new Funko(
+                            null,
                             UUID.fromString(lines_split[0].substring(0, 35)),
                             idGenerator.getAndIncrementeId(),
                             lines_split[1],
