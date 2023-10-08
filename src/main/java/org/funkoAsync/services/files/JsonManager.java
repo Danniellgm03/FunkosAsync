@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,8 +22,8 @@ public class JsonManager {
 
     private Logger logger = LoggerFactory.getLogger(JsonManager.class);
 
-    public CompletableFuture<Void> writeFunkosToJson(List<Funko> funkos, String path_output)  {
-        return CompletableFuture.runAsync(() -> {
+    public CompletableFuture<Boolean> writeFunkosToJson(List<Funko> funkos, String path_output)  {
+        return CompletableFuture.supplyAsync(() -> {
             logger.debug("Escribiendo funkos en un json");
             Gson gson = new GsonBuilder()
                     .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
@@ -31,7 +32,8 @@ public class JsonManager {
                     .create();
             String json = gson.toJson(funkos);
             try {
-                Files.writeString(new File(path_output).toPath(), json);
+                Path path_new_file = Files.writeString(new File(path_output).toPath(), json);
+                return Files.exists(path_new_file);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

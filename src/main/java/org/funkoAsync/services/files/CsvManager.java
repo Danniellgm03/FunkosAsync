@@ -30,23 +30,26 @@ public class CsvManager {
             try {
                 List<String> lines = Files.readAllLines(Path.of(path));
 
-                lines.remove(0);
-                for (String line: lines) {
-                    String[] lines_split = line.split(",");
+                if(!lines.isEmpty()){
+                    lines.remove(0);
+                    for (String line: lines) {
+                        String[] lines_split = line.split(",");
 
-                    Funko funko = new Funko(
-                            null,
-                            UUID.fromString(lines_split[0].substring(0, 35)),
-                            idGenerator.getAndIncrementeId(),
-                            lines_split[1],
-                            Modelo.valueOf(lines_split[2]),
-                            Double.parseDouble(lines_split[3]),
-                            LocalDate.parse(lines_split[4]),
-                            LocalDateTime.now(),
-                            LocalDateTime.now()
-                    );
-                    funkos.add(funko);
+                        Funko funko = new Funko(
+                                null,
+                                UUID.fromString(lines_split[0].substring(0, 35)),
+                                idGenerator.getAndIncrementeId(),
+                                lines_split[1],
+                                Modelo.valueOf(lines_split[2]),
+                                Double.parseDouble(lines_split[3]),
+                                LocalDate.parse(lines_split[4]),
+                                LocalDateTime.now(),
+                                LocalDateTime.now()
+                        );
+                        funkos.add(funko);
+                    }
                 }
+
 
             } catch (IOException e) {
                 throw new RuntimeException(e);

@@ -1,5 +1,7 @@
 package org.funkoAsync.services.funkos;
 
+import org.funkoAsync.exceptions.cache.CachePutNullKeyException;
+import org.funkoAsync.exceptions.storage.ImportException;
 import org.funkoAsync.models.Funko;
 import org.funkoAsync.repositories.funko.FunkoRepository;
 import org.funkoAsync.repositories.funko.FunkoRepositoryImpl;
@@ -11,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.rmi.server.ExportException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +73,11 @@ public class FunkoServiceImpl implements FunkoService{
     public Funko save(Funko funko) throws SQLException, ExecutionException, InterruptedException {
         logger.debug("Insertamos funko en la base de datos");
         funko = repository.save(funko).get();
-        cache.put(funko.getId(), funko);
+        try {
+            cache.put(funko.getId(), funko);
+        } catch (Exception  e) {
+            logger.error("No se puede almacenar en la cache un funko con id null");
+        }
         return funko;
     }
 
@@ -78,7 +85,11 @@ public class FunkoServiceImpl implements FunkoService{
     public Funko update(Funko funko) throws SQLException, ExecutionException, InterruptedException {
         logger.debug("Actualiando funko");
         funko = repository.update(funko).get();
-        cache.put(funko.getId(), funko);
+        try {
+            cache.put(funko.getId(), funko);
+        } catch (Exception e) {
+            logger.error("No se puede almacenar en la cache un funko con id null");
+        }
         return funko;
     }
 
@@ -99,8 +110,11 @@ public class FunkoServiceImpl implements FunkoService{
     }
 
     @Override
-    public void backup() throws SQLException, ExecutionException, InterruptedException {
-        storageFunko.exportToJsonAsync(this.findAll());
+    public void backup() throws SQLException, ExecutionException, InterruptedException, ExportException {
+        boolean isExported = storageFunko.exportToJsonAsync(this.findAll());
+        if(!isExported){
+            throw new ExportException("Error al exportar datos bd a json");
+        }
     }
 
     @Override
@@ -112,11 +126,13 @@ public class FunkoServiceImpl implements FunkoService{
             List<Funko> funkos_added = new ArrayList<>();
             try {
                 List<Funko> funkos = storageFunko.importFromCsvAsync(file);
-
+                if(funkos.isEmpty()){
+                    throw new ImportException("No hay funkos para importar");
+                }
                 for (Funko funko: funkos) {
                     funkos_added.add(this.save(funko));
                 }
-            } catch (ExecutionException | InterruptedException | SQLException e) {
+            } catch (ExecutionException | InterruptedException | ImportException | SQLException e) {
                 throw new RuntimeException(e);
             }
             return funkos_added;

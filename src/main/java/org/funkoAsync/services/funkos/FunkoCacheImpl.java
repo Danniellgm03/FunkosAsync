@@ -1,5 +1,7 @@
 package org.funkoAsync.services.funkos;
 
+import org.funkoAsync.exceptions.cache.CachePutNullKeyException;
+import org.funkoAsync.exceptions.cache.CachePutNullValueException;
 import org.funkoAsync.models.Funko;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +23,7 @@ public class FunkoCacheImpl implements FunkoCache{
 
     private final ScheduledExecutorService cleaner;
 
-    public FunkoCacheImpl(int maxSize){
+    public FunkoCacheImpl(int maxSize, int initDelay, int period, TimeUnit timeUnit){
         this.maxSize = maxSize;
         this.cache =  new LinkedHashMap<>(maxSize, 0.75f, true ){
             @Override
@@ -31,13 +33,19 @@ public class FunkoCacheImpl implements FunkoCache{
 
         };
         this.cleaner = Executors.newSingleThreadScheduledExecutor();
-        this.cleaner.scheduleAtFixedRate(this::clear, 1, 1, TimeUnit.MINUTES);
+        this.cleaner.scheduleAtFixedRate(this::clear, initDelay, period, timeUnit);
     }
 
 
     @Override
-    public void put(Integer key, Funko value) {
+    public void put(Integer key, Funko value) throws CachePutNullKeyException, CachePutNullValueException {
         logger.debug("Añadiendo funko a la cache");
+        if(key == null){
+            throw new CachePutNullKeyException("No se pudo insertar en la cache por la key(id) es null");
+        }else if(value == null){
+            throw new CachePutNullValueException("El funo no se inserto a la cache debido a que es un null");
+        }
+
         cache.put(key, value);
     }
 
@@ -48,9 +56,9 @@ public class FunkoCacheImpl implements FunkoCache{
     }
 
     @Override
-    public void delete(Integer key) {
+    public Funko delete(Integer key) {
         logger.debug("Eliminando funko de la cache con id: "+ key);
-        cache.remove(key);
+        return cache.remove(key);
     }
 
     @Override
@@ -68,4 +76,6 @@ public class FunkoCacheImpl implements FunkoCache{
     public void shutdown() {
         cleaner.shutdown();
     }
+
+
 }
