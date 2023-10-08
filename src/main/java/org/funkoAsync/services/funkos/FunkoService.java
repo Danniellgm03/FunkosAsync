@@ -3,6 +3,7 @@ package org.funkoAsync.services.funkos;
 import org.funkoAsync.models.Funko;
 import org.funkoAsync.repositories.funko.FunkoRepository;
 
+import java.rmi.server.ExportException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +26,7 @@ public interface FunkoService {
 
     void deleteAll() throws SQLException, ExecutionException, InterruptedException;
 
-    void backup() throws SQLException, ExecutionException, InterruptedException;
+    void backup() throws SQLException, ExecutionException, InterruptedException, ExportException;
 
     CompletableFuture<List<Funko>> importCsv() throws ExecutionException, InterruptedException;
 

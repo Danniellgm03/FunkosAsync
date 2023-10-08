@@ -10,7 +10,6 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -54,7 +53,7 @@ public class FunkoStorageServImpl implements FunkoStorageServ{
     }
 
     @Override
-    public Void exportToJsonAsync(List<Funko> data) throws ExecutionException, InterruptedException {
+    public Boolean exportToJsonAsync(List<Funko> data) throws ExecutionException, InterruptedException {
         logger.debug("Exportando a datos a JSON");
         String name_file = File.separator + "backupJsonFunkos_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".json";
         return jsonManager.writeFunkosToJson(data, backupDirectory.toString() + name_file).get();
