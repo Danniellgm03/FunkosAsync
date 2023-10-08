@@ -1,6 +1,8 @@
 package org.funkoAsync.repositories.funko;
 
 import org.funkoAsync.enums.Modelo;
+import org.funkoAsync.exceptions.funko.FunkoNoEncontradoException;
+import org.funkoAsync.exceptions.funko.FunkoNoGuardado;
 import org.funkoAsync.models.Funko;
 import org.funkoAsync.services.database.DataBaseManager;
 import org.slf4j.Logger;
@@ -35,7 +37,7 @@ public class FunkoRepositoryImpl  implements FunkoRepository{
     }
 
     @Override
-    public CompletableFuture<Funko> save(Funko funko) throws SQLException, SQLException {
+    public CompletableFuture<Funko> save(Funko funko) {
         return CompletableFuture.supplyAsync(() -> {
             String query = "INSERT INTO funkos (cod, myId, name, model, price, release_date) VALUES(?,?,?,?,?,?)";
             try(
@@ -59,9 +61,13 @@ public class FunkoRepositoryImpl  implements FunkoRepository{
                 }
                 if(res > 0){
                    logger.debug("Funko insertado");
+                }else{
+                    logger.error("Funko no insertado");
+                    throw new FunkoNoGuardado("Error al insertar el funko");
                 }
-            } catch (SQLException e) {
+            } catch (SQLException| FunkoNoGuardado e) {
                 logger.debug("Error al insertar funko");
+
             }
             return funko;
         });
@@ -87,6 +93,7 @@ public class FunkoRepositoryImpl  implements FunkoRepository{
                     logger.debug("Funko actualizado");
                 }else{
                     logger.error("Error al actualizar funko");
+                    throw new FunkoNoEncontradoException("Funko no encontrado con el id: " + funko.getId());
                 }
             } catch (SQLException e) {
                 logger.error("Error al actualizar funko: " + funko.getId());
