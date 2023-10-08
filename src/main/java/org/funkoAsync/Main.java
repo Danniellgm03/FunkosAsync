@@ -28,7 +28,7 @@ public class Main {
 
         FunkoServiceImpl funkoService = FunkoServiceImpl.getInstance(
                 FunkoRepositoryImpl.getInstance(DataBaseManager.getInstance()),
-                new FunkoCacheImpl(10),
+                new FunkoCacheImpl(10, 1, 1, TimeUnit.MINUTES),
                 FunkoStorageServImpl.getInstance(
                         new CsvManager(),
                         new JsonManager()
@@ -60,31 +60,27 @@ public class Main {
         var avgPricesFunkos = getAvgPricesFunkos(allFunkos);
         var funkosGroupByModel = getFunkosGroupByModel(allFunkos);
         var countFunkosGroupByModel = getCountFunkosGroupByModel(allFunkos);
-        var funksoRelease2003 = getFunkosRelease2023(allFunkos);
+        var funksoRelease2023 = getFunkosRelease2023(allFunkos);
         var funkosWithNameStichANDCount= getFunkosWithNameStichANDCount(allFunkos);
 
+        List<CompletableFuture<Double>> prueba = new ArrayList<>();
+
         try {
-            logger.info("FUNKO MAS CARO");
             logger.info("El funko mas caro es " + funkoMostExpensive.get());
 
             System.out.println();
-            logger.info("Obteniendo la media del precio de todos los funkos");
             logger.info("La media de los precios de los funkos es: " + avgPricesFunkos.get());
 
-            System.out.println();
-            logger.info("Obteniendo los funkos agrupados por modelo");
+            System.out.println("FUNKOS AGRUPADOS POR MODELO");
             System.out.println(funkosGroupByModel.get());
 
-            System.out.println();
-            logger.info("Obteniendo el numero de funkos por modelo");
+            System.out.println("FUNKOS CONTEO POR MODELO");
             System.out.println(countFunkosGroupByModel.get());
 
-            System.out.println();
-            logger.info("Obteniendo funkos lanzados en 2023");
-            System.out.println(funksoRelease2003.get());
+            System.out.println("FUNKOS LANZADOS EN 2023");
+            System.out.println(funksoRelease2023.get());
 
-            System.out.println();
-            logger.info("Obteniendo los diferentes funkos de stich con su conteo");
+            System.out.println("FUNKOS CON NOMBRE STICH Y CONTEO");
             System.out.println(funkosWithNameStichANDCount.get());
 
         } catch (InterruptedException | ExecutionException e) {
@@ -97,36 +93,54 @@ public class Main {
 
 
     private static CompletableFuture<Funko> getFunkoMostExpensive(List<Funko> allFunkos){
-        return CompletableFuture.supplyAsync(() -> allFunkos.stream()
-                    .max(Comparator.comparingDouble(Funko::getPrecio)).orElse(null));
+        return CompletableFuture.supplyAsync(() -> {
+            logger.info("FUNKO MAS CARO");
+            return allFunkos.stream()
+                    .max(Comparator.comparingDouble(Funko::getPrecio)).orElse(null);
+        });
     }
 
     private static CompletableFuture<Double> getAvgPricesFunkos(List<Funko> allFunkos){
-        return CompletableFuture.supplyAsync(() -> allFunkos.stream()
-                .mapToDouble(Funko::getPrecio)
-                .average().orElse(0));
+        return CompletableFuture.supplyAsync(() -> {
+            logger.info("Obteniendo la media del precio de todos los funkos");
+            return allFunkos.stream()
+                    .mapToDouble(Funko::getPrecio)
+                    .average().orElse(0);
+        });
     }
 
     private static CompletableFuture<Map<Modelo, List<Funko>>> getFunkosGroupByModel(List<Funko> allFunkos){
-        return CompletableFuture.supplyAsync(() -> allFunkos.stream()
-                .collect(Collectors.groupingBy(Funko::getModelo)));
+        return CompletableFuture.supplyAsync(() -> {
+            logger.info("Obteniendo los funkos agrupados por modelo");
+            return  allFunkos.stream()
+                    .collect(Collectors.groupingBy(Funko::getModelo));
+        });
     }
 
     private static CompletableFuture<Map<Modelo, Long>> getCountFunkosGroupByModel(List<Funko> allFunkos){
-        return CompletableFuture.supplyAsync(() -> allFunkos.stream()
-                .collect(Collectors.groupingBy(Funko::getModelo, Collectors.counting())));
+        return CompletableFuture.supplyAsync(() -> {
+            logger.info("Obteniendo el numero de funkos por modelo");
+            return allFunkos.stream()
+                    .collect(Collectors.groupingBy(Funko::getModelo, Collectors.counting()));
+        });
     }
 
     private static CompletableFuture<List<Funko>> getFunkosRelease2023(List<Funko> allFunkos){
-        return CompletableFuture.supplyAsync(() -> allFunkos.stream()
-                .filter(funko -> funko.getFecha().getYear() == 2023)
-                .collect(Collectors.toList()));
+        return CompletableFuture.supplyAsync(() -> {
+            logger.info("Obteniendo funkos lanzados en 2023");
+            return allFunkos.stream()
+                    .filter(funko -> funko.getFecha().getYear() == 2023)
+                    .collect(Collectors.toList());
+        });
     }
 
     private static CompletableFuture<Map<String, Long>> getFunkosWithNameStichANDCount(List<Funko> allFunkos){
-        return CompletableFuture.supplyAsync(() -> allFunkos.stream()
-                .filter(funko -> funko.getNombre().contains("Stitch"))
-                .collect(Collectors.groupingBy(Funko::getNombre, Collectors.counting())));
+        return CompletableFuture.supplyAsync(() -> {
+            logger.info("Obteniendo los diferentes funkos de stich con su conteo");
+            return allFunkos.stream()
+                    .filter(funko -> funko.getNombre().contains("Stitch"))
+                    .collect(Collectors.groupingBy(Funko::getNombre, Collectors.counting()));
+        } );
     }
 
 
