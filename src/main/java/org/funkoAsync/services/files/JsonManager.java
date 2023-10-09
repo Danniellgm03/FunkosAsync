@@ -24,6 +24,15 @@ public class JsonManager {
 
     public CompletableFuture<Boolean> writeFunkosToJson(List<Funko> funkos, String path_output)  {
         return CompletableFuture.supplyAsync(() -> {
+            if(funkos == null){
+                logger.error("No se puede exportar funkos porque es null");
+                return false;
+            }
+            if(Files.exists(Path.of(path_output))){
+                logger.error("No se puede expotar funkos a " + path_output + " porque no existe");
+                return false;
+            }
+
             logger.debug("Escribiendo funkos en un json");
             Gson gson = new GsonBuilder()
                     .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
