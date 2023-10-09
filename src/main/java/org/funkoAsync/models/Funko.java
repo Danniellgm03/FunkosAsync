@@ -74,6 +74,34 @@ public class Funko {
         this.id = id;
     }
 
+    public void setCOD(UUID COD) {
+        this.COD = COD;
+    }
+
+    public void setMyId(Long myId) {
+        this.myId = myId;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public void setModelo(Modelo modelo) {
+        this.modelo = modelo;
+    }
+
+    public void setPrecio(double precio) {
+        this.precio = precio;
+    }
+
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
+    }
+
+    public void setCreated_at(LocalDateTime created_at) {
+        this.created_at = created_at;
+    }
+
     @Override
     public String toString() {
         return "Funko{" +
