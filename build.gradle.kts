@@ -21,6 +21,15 @@ dependencies {
     implementation("org.mybatis:mybatis:3.5.13")
     implementation("com.zaxxer:HikariCP:5.0.1")
 
+    testImplementation("org.mockito:mockito-junit-jupiter:5.5.0")
+    testImplementation("org.mockito:mockito-core:5.5.0")
+
+}
+
+tasks.jar{
+    manifest {
+        attributes["Main-Class"] = "org.funkoAsync.Main"
+    }
 }
 
 tasks.test {
