@@ -12,6 +12,11 @@ import java.sql.*;
 import java.util.Optional;
 import java.util.Properties;
 
+/**
+ * DataBaseManager
+ * Clase que gestiona la conexión con la base de datos
+ * @author daniel
+ */
 public class DataBaseManager {
 
     private static DataBaseManager instance;
@@ -43,6 +48,10 @@ public class DataBaseManager {
         }
     }
 
+    /**
+     * Obtener la instancia de la clase Singleton
+     * @return this
+     */
     public synchronized static DataBaseManager getInstance(){
         if(instance == null){
             instance = new DataBaseManager();
@@ -51,7 +60,10 @@ public class DataBaseManager {
     }
 
 
-
+    /**
+     * Obtener las datos de la base de datos
+     *
+     */
     private synchronized void initConfig() {
 
         String propertiesFile = ClassLoader.getSystemResource("config.properties").getFile();
@@ -63,19 +75,27 @@ public class DataBaseManager {
             initTables = props.getProperty("database.initTables").equals("true");
             url = props.getProperty("database.url");
 
-
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
     }
 
+    /**
+     * Obtener la conexión con la base de datos
+     * @return Connection
+     * @throws SQLException
+     */
     public synchronized Connection getConnection() throws SQLException {
         System.out.println(hikary);
         return hikary.getConnection();
     }
 
+    /**
+     * Clase para iniciar la base de datos y sus datos
+     * @param sqlFile
+     * @param conn
+     */
     private synchronized void initData(String sqlFile, Connection conn)  {
         try {
             executeScript(conn, sqlFile, true);
@@ -84,6 +104,13 @@ public class DataBaseManager {
         }
     }
 
+    /**
+     * Ejecutar un script de SQL
+     * @param conn
+     * @param file
+     * @param logWriter
+     * @throws FileNotFoundException
+     */
     public synchronized void executeScript(Connection conn, String file, boolean logWriter) throws FileNotFoundException {
         ScriptRunner sr = new ScriptRunner(conn);
         logger.debug("Ejecutando script de SQL " + file);

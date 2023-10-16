@@ -13,6 +13,15 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Clase que implementa la interfaz FunkoStorageServ y que se encarga de
+ * el almacenamiento de los datos en formato JSON y CSV
+ * @see org.funkoAsync.services.storage.FunkoStorageServ
+ * @see org.funkoAsync.services.files.CsvManager
+ * @see org.funkoAsync.services.files.JsonManager
+ * @see org.funkoAsync.models.Funko
+ * @author daniel
+ */
 public class FunkoStorageServImpl implements FunkoStorageServ{
 
     private static FunkoStorageServImpl instance;
@@ -33,6 +42,9 @@ public class FunkoStorageServImpl implements FunkoStorageServ{
 
     }
 
+    /**
+     * Método que se encarga de crear el directorio para almacenar los backups
+     */
     private boolean initDirectories(){
         String absolute_path = Paths.get("").toAbsolutePath().toString();
         backupDirectory = new File(absolute_path + File.separator + "backups");
@@ -45,6 +57,11 @@ public class FunkoStorageServImpl implements FunkoStorageServ{
         return existDirectory;
     }
 
+    /**
+     * Método que se encarga de crear una instancia de la clase
+     * @param csvManager
+     * @param jsonManager
+     */
     public static FunkoStorageServImpl getInstance(CsvManager csvManager, JsonManager jsonManager) {
         if(instance == null){
             instance = new FunkoStorageServImpl(csvManager, jsonManager);
@@ -52,6 +69,10 @@ public class FunkoStorageServImpl implements FunkoStorageServ{
         return instance;
     }
 
+    /**
+     * Metodo que se encarga de exportar los datos a un archivo JSON
+     * @param data
+     */
     @Override
     public Boolean exportToJsonAsync(List<Funko> data) throws ExecutionException, InterruptedException {
         logger.debug("Exportando a datos a JSON");
@@ -59,6 +80,10 @@ public class FunkoStorageServImpl implements FunkoStorageServ{
         return jsonManager.writeFunkosToJson(data, backupDirectory.toString() + name_file).get();
     }
 
+    /**
+     * Metodo que se encarga de importar los datos a un archivo CSV
+     * @param filePath
+     */
     @Override
     public List<Funko> importFromCsvAsync(String filePath) throws ExecutionException, InterruptedException {
         logger.debug("Importando datos desde csv");

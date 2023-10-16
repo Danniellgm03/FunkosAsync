@@ -19,9 +19,22 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Clase encargada de leer el archivo csv y convertirlo en una lista de funkos
+ * @see Funko
+ * @author daniel
+ */
 public class CsvManager {
 
     Logger logger = LoggerFactory.getLogger(CsvManager.class);
+
+    /**
+     * Metodo encargado de leer el archivo csv y convertirlo en una lista de funkos
+     * @param path
+     * @return CompletableFuture<List<Funko>>
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     public CompletableFuture<List<Funko>>  readCsv(String path) throws ExecutionException, InterruptedException {
         IdGenerator idGenerator = IdGenerator.getInstance();
         return CompletableFuture.supplyAsync(() -> {

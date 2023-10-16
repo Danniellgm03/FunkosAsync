@@ -21,6 +21,12 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Clase que implementa la interfaz FunkoService
+ * @see org.funkoAsync.services.funkos.FunkoService
+ * @version 1.0
+ * @author daniel
+ */
 public class FunkoServiceImpl implements FunkoService{
 
     private static FunkoServiceImpl instance;
@@ -32,12 +38,25 @@ public class FunkoServiceImpl implements FunkoService{
 
     private final FunkoStorageServ storageFunko;
 
+    /**
+     * Constructor de la clase FunkoServiceImpl
+     * @param repositoryFunko
+     * @param cache
+     * @param storageFunko
+     */
     private FunkoServiceImpl(FunkoRepository repositoryFunko, FunkoCache cache, FunkoStorageServImpl storageFunko){
         this.repository = repositoryFunko;
         this.cache = cache;
         this.storageFunko = storageFunko;
     }
 
+    /**
+     * Metodo que devuelve una instancia de la clase FunkoServiceImpl
+     * @param repositoryFunko
+     * @param cache
+     * @param storageFunko
+     * @return
+     */
     public static FunkoServiceImpl getInstance(FunkoRepository repositoryFunko, FunkoCache cache, FunkoStorageServImpl storageFunko){
         if(instance == null){
             instance = new FunkoServiceImpl(repositoryFunko, cache, storageFunko);
@@ -45,18 +64,41 @@ public class FunkoServiceImpl implements FunkoService{
         return instance;
     }
 
+    /**
+     * Metodo que devuelve todos los funkos de la base de datos
+     * @return
+     * @throws SQLException
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     @Override
     public List<Funko> findAll() throws SQLException, ExecutionException, InterruptedException {
         logger.debug("Obteniendo todos los funkos");
         return repository.findAll().get();
     }
 
+    /**
+     * Metodo que devuelve todos los funkos de la base de datos por nombre
+     * @param nombre
+     * @return
+     * @throws SQLException
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     @Override
     public List<Funko> findByNombre(String nombre) throws SQLException, ExecutionException, InterruptedException {
         logger.debug("Obteniendo funkos por nombre");
         return repository.findByNombre(nombre).get();
     }
 
+    /**
+     * Metodo que devuelve todos los funkos de la base de datos por id
+     * @param id
+     * @return
+     * @throws SQLException
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     @Override
     public Optional<Funko> findById(Integer id) throws SQLException, ExecutionException, InterruptedException {
         Funko funko = cache.get(id);
@@ -69,6 +111,11 @@ public class FunkoServiceImpl implements FunkoService{
         }
     }
 
+    /**
+     * Metodo que guarda un funko en la base de datos
+     * @param funko
+     * @return Funko
+     */
     @Override
     public Funko save(Funko funko) throws SQLException, ExecutionException, InterruptedException {
         logger.debug("Insertamos funko en la base de datos");
@@ -81,6 +128,11 @@ public class FunkoServiceImpl implements FunkoService{
         return funko;
     }
 
+    /**
+     * Metodo que actualiza un funko en la base de datos
+     * @param funko
+     * @return Funko
+     */
     @Override
     public Funko update(Funko funko) throws SQLException, ExecutionException, InterruptedException {
         logger.debug("Actualiando funko");
@@ -93,6 +145,11 @@ public class FunkoServiceImpl implements FunkoService{
         return funko;
     }
 
+    /**
+     * Metodo que borra un funko de la base de datos por id
+     * @param id
+     * @return boolean
+     */
     @Override
     public boolean deleteById(Integer id) throws SQLException, ExecutionException, InterruptedException {
         logger.debug("Borrando funko por id");
@@ -104,11 +161,17 @@ public class FunkoServiceImpl implements FunkoService{
         return isDeleted;
     }
 
+    /**
+     * Metodo que borra todos los funkos de la base de datos
+     */
     @Override
     public void deleteAll() throws SQLException, ExecutionException, InterruptedException {
         repository.deleteAll().get();
     }
 
+    /**
+     * Metodo que exporta los funkos de la base de datos a un fichero json
+     */
     @Override
     public void backup() throws SQLException, ExecutionException, InterruptedException, ExportException {
         boolean isExported = storageFunko.exportToJsonAsync(this.findAll());
@@ -117,6 +180,10 @@ public class FunkoServiceImpl implements FunkoService{
         }
     }
 
+    /**
+     * Metodo que importa los funkos de un fichero csv a la base de datos
+     * @return List<Funko>
+     */
     @Override
     public CompletableFuture<List<Funko>> importCsv()  {
         Path path = Path.of("");

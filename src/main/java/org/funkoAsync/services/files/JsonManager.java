@@ -18,10 +18,21 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Clase que se encarga de escribir los funkos en un json
+ * @author daniel
+ * @see Funko
+ */
 public class JsonManager {
 
     private Logger logger = LoggerFactory.getLogger(JsonManager.class);
 
+    /**
+     * Metodo que se encarga de escribir una lista de funkos en un json
+     * @param funkos
+     * @param path_output
+     * @return
+     */
     public CompletableFuture<Boolean> writeFunkosToJson(List<Funko> funkos, String path_output)  {
         return CompletableFuture.supplyAsync(() -> {
             if(funkos == null){

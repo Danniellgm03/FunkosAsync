@@ -13,6 +13,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Implementación de la interfaz FunkoCache
+ * Extiende de LinkedHashMap para poder tener un control de la cache
+ * y poder eliminar los elementos mas antiguos
+ * Implementa la interfaz ScheduledExecutorService para poder limpiar la cache
+ * cada cierto tiempo
+ * @author daniel
+ */
 public class FunkoCacheImpl implements FunkoCache{
 
     private final int maxSize;
@@ -23,6 +31,13 @@ public class FunkoCacheImpl implements FunkoCache{
 
     private final ScheduledExecutorService cleaner;
 
+    /**
+     * Constructor de la clase FunkoCacheImpl
+     * @param maxSize
+     * @param initDelay
+     * @param period
+     * @param timeUnit
+     */
     public FunkoCacheImpl(int maxSize, int initDelay, int period, TimeUnit timeUnit){
         this.maxSize = maxSize;
         this.cache =  new LinkedHashMap<>(maxSize, 0.75f, true ){
@@ -37,6 +52,13 @@ public class FunkoCacheImpl implements FunkoCache{
     }
 
 
+    /**
+     * Método que añade un funko a la cache
+     * @param key
+     * @param value
+     * @throws CachePutNullKeyException
+     * @throws CachePutNullValueException
+     */
     @Override
     public void put(Integer key, Funko value) throws CachePutNullKeyException, CachePutNullValueException {
         logger.debug("Añadiendo funko a la cache");
@@ -49,18 +71,31 @@ public class FunkoCacheImpl implements FunkoCache{
         cache.put(key, value);
     }
 
+    /**
+     * Método que obtiene un funko de la cache
+     * @param key
+     * @return
+     */
     @Override
     public Funko get(Integer key) {
         logger.debug("Obteniendo funko de la cache con id: " + key);
         return cache.get(key);
     }
 
+    /**
+     * Método que elimina un funko de la cache
+     * @param key
+     * @return
+     */
     @Override
     public Funko delete(Integer key) {
         logger.debug("Eliminando funko de la cache con id: "+ key);
         return cache.remove(key);
     }
 
+    /**
+     * Método que limpia la cache
+     */
     @Override
     public void clear() {
         cache.entrySet().removeIf(entry -> {
@@ -72,6 +107,9 @@ public class FunkoCacheImpl implements FunkoCache{
         });
     }
 
+    /**
+     * Método que cierra el cleaner
+     */
     @Override
     public void shutdown() {
         cleaner.shutdown();
