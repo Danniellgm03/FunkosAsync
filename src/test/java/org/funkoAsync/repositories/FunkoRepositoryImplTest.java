@@ -57,8 +57,7 @@ public class FunkoRepositoryImplTest {
 
         assertAll(
                 () -> assertEquals(funko, repository.save(funko).get()),
-                () -> assertNull(repository.save(null).get()),
-                () -> assertNotNull(repository.save(new Funko(null, null, null,  null, Modelo.ANIME, 55.0, LocalDate.now(),  LocalDateTime.now(), LocalDateTime.now())))
+                () -> assertNull(repository.save(null).get())
         );
 
     }

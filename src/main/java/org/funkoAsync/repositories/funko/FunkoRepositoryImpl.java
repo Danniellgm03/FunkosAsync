@@ -18,8 +18,14 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Implementacion de FunkoRepository
+ * @see FunkoRepository
+ * @see org.funkoAsync.repositories.base.CrudRepository
+ * @see DataBaseManager
+ * @author daniel
+ */
 public class FunkoRepositoryImpl  implements FunkoRepository{
-
 
     private static FunkoRepositoryImpl instance;
     private final DataBaseManager db;
@@ -30,6 +36,11 @@ public class FunkoRepositoryImpl  implements FunkoRepository{
         this.db = db;
     }
 
+    /**
+     * Singleton de FunkoRepositoryImpl
+     * @param db
+     * @return this
+     */
     public static FunkoRepositoryImpl getInstance(DataBaseManager db){
         if(instance == null){
             instance = new FunkoRepositoryImpl(db);
@@ -37,6 +48,10 @@ public class FunkoRepositoryImpl  implements FunkoRepository{
         return instance;
     }
 
+    /**
+     * Guarda un funko en la base de datos
+     * @param funko
+     */
     @Override
     public CompletableFuture<Funko> save(Funko funko) {
         return CompletableFuture.supplyAsync(() -> {
@@ -78,6 +93,11 @@ public class FunkoRepositoryImpl  implements FunkoRepository{
         });
     }
 
+    /**
+     * Actualiza un funko en la base de datos
+     * @param funko
+     * @throws SQLException
+     */
     @Override
     public CompletableFuture<Funko> update(Funko funko) throws SQLException, SQLException {
         return CompletableFuture.supplyAsync(() -> {
@@ -117,6 +137,11 @@ public class FunkoRepositoryImpl  implements FunkoRepository{
         });
     }
 
+    /**
+     * Busca un funko por su id
+     * @param id
+     * @throws SQLException
+     */
     @Override
     public CompletableFuture<Optional<Funko>> findById(Integer id) throws SQLException {
         return CompletableFuture.supplyAsync(() -> {
@@ -152,6 +177,10 @@ public class FunkoRepositoryImpl  implements FunkoRepository{
         });
     }
 
+    /**
+     * Busca todos los funkos de la base de datos
+     * @throws SQLException
+     */
     @Override
     public CompletableFuture<List<Funko>> findAll() throws SQLException {
         return CompletableFuture.supplyAsync(() -> {
@@ -187,6 +216,11 @@ public class FunkoRepositoryImpl  implements FunkoRepository{
         });
     }
 
+    /**
+     * Elimina un funko por su id
+     * @param id
+     * @throws SQLException
+     */
     @Override
     public CompletableFuture<Boolean> deleteById(Integer id) throws SQLException {
         return CompletableFuture.supplyAsync(() -> {
@@ -206,6 +240,10 @@ public class FunkoRepositoryImpl  implements FunkoRepository{
         });
     }
 
+    /**
+     * Elimina todos los funkos de la base de datos
+     * @throws SQLException
+     */
     @Override
     public CompletableFuture<Void> deleteAll() throws SQLException {
         return CompletableFuture.runAsync(() -> {
@@ -223,6 +261,11 @@ public class FunkoRepositoryImpl  implements FunkoRepository{
         });
     }
 
+    /**
+     * Busca un funko por su nombre
+     * @param name
+     * @throws SQLException
+     */
     @Override
     public CompletableFuture<List<Funko>> findByNombre(String name) throws SQLException {
         return CompletableFuture.supplyAsync(() -> {
