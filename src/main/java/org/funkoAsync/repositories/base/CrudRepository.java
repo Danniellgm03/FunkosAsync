@@ -16,7 +16,6 @@ public interface CrudRepository<T, ID, EX extends Exception> {
     /**
      * Guarda un T en la base de datos
      * @param t
-     * @return CompletableFuture<T>
      * @throws SQLException
      * @throws EX
      */
@@ -25,7 +24,6 @@ public interface CrudRepository<T, ID, EX extends Exception> {
     /**
      * Actualiza un T en la base de datos
      * @param t
-     * @return CompletableFuture<T>
      * @throws SQLException
      * @throws EX
      */
@@ -34,14 +32,12 @@ public interface CrudRepository<T, ID, EX extends Exception> {
     /**
      * Busca un T por su id
      * @param id
-     * @return CompletableFuture<Optional<T>>
      * @throws SQLException
      */
     CompletableFuture<Optional<T>> findById(ID id) throws SQLException;
 
     /**
      * Busca todos los T de la base de datos
-     * @return CompletableFuture<List<T>>
      * @throws SQLException
      */
     CompletableFuture<List<T>> findAll() throws SQLException;
@@ -49,14 +45,12 @@ public interface CrudRepository<T, ID, EX extends Exception> {
     /**
      * Elimina un T por su id
      * @param id
-     * @return CompletableFuture<Boolean>
      * @throws SQLException
      */
     CompletableFuture<Boolean> deleteById(ID id) throws SQLException;
 
     /**
      * Elimina todos los T de la base de datos
-     * @return CompletableFuture<Void>
      * @throws SQLException
      */
     CompletableFuture<Void> deleteAll() throws SQLException;

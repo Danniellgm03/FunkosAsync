@@ -31,7 +31,6 @@ public class CsvManager {
     /**
      * Metodo encargado de leer el archivo csv y convertirlo en una lista de funkos
      * @param path
-     * @return CompletableFuture<List<Funko>>
      * @throws ExecutionException
      * @throws InterruptedException
      */

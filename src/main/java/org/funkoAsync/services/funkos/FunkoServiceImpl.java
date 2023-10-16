@@ -182,7 +182,6 @@ public class FunkoServiceImpl implements FunkoService{
 
     /**
      * Metodo que importa los funkos de un fichero csv a la base de datos
-     * @return List<Funko>
      */
     @Override
     public CompletableFuture<List<Funko>> importCsv()  {

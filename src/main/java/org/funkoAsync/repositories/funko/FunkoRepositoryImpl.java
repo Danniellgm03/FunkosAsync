@@ -51,7 +51,6 @@ public class FunkoRepositoryImpl  implements FunkoRepository{
     /**
      * Guarda un funko en la base de datos
      * @param funko
-     * @return CompletableFuture<Funko>
      */
     @Override
     public CompletableFuture<Funko> save(Funko funko) {
@@ -97,7 +96,6 @@ public class FunkoRepositoryImpl  implements FunkoRepository{
     /**
      * Actualiza un funko en la base de datos
      * @param funko
-     * @return CompletableFuture<Funko>
      * @throws SQLException
      */
     @Override
@@ -142,7 +140,6 @@ public class FunkoRepositoryImpl  implements FunkoRepository{
     /**
      * Busca un funko por su id
      * @param id
-     * @return CompletableFuture<Optional<Funko>>
      * @throws SQLException
      */
     @Override
@@ -182,7 +179,6 @@ public class FunkoRepositoryImpl  implements FunkoRepository{
 
     /**
      * Busca todos los funkos de la base de datos
-     * @return CompletableFuture<List<Funko>>
      * @throws SQLException
      */
     @Override
@@ -223,7 +219,6 @@ public class FunkoRepositoryImpl  implements FunkoRepository{
     /**
      * Elimina un funko por su id
      * @param id
-     * @return CompletableFuture<Boolean>
      * @throws SQLException
      */
     @Override
@@ -247,7 +242,6 @@ public class FunkoRepositoryImpl  implements FunkoRepository{
 
     /**
      * Elimina todos los funkos de la base de datos
-     * @return CompletableFuture<Void>
      * @throws SQLException
      */
     @Override
@@ -270,7 +264,6 @@ public class FunkoRepositoryImpl  implements FunkoRepository{
     /**
      * Busca un funko por su nombre
      * @param name
-     * @return CompletableFuture<List<Funko>>
      * @throws SQLException
      */
     @Override

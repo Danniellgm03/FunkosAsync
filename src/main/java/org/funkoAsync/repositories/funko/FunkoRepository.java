@@ -16,7 +16,6 @@ public interface FunkoRepository extends CrudRepository<Funko, Integer, SQLExcep
     /**
      * Busca un Funko por su nombre
      * @param name
-     * @return CompletableFuture<List<Funko>>
      * @throws SQLException
      */
     CompletableFuture<List<Funko>> findByNombre(String name) throws SQLException;
